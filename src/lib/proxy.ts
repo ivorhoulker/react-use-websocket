@@ -23,10 +23,12 @@ export const websocketWrapper = (
       const val = obj[key];
       if ((key as any) === "reconnect") return start;
       if (typeof val === "function") {
-        // console.error('Calling methods directly on the websocket is not supported at this moment. You must use the methods returned by useWebSocket.');
+        console.error(
+          "Calling methods directly on the websocket is not supported at this moment. You must use the methods returned by useWebSocket."
+        );
         // Now it's supported, yay.
-        //Prevent error thrown by invoking a non-function
-        // return () => {};
+        // Prevent error thrown by invoking a non-function
+        return () => {};
       } else {
         return val;
       }
