@@ -33,7 +33,7 @@ export type WebSocketMessage =
   | ArrayBufferView;
 
 export type SendMessage = (message: WebSocketMessage) => void;
-export type SendRequest = (message: any) => Promise<any>;
+export type SendRequest = (action: string, data: any) => Promise<any>;
 export type SendJsonMessage = (jsonMessage: any) => void;
 
 export type Subscriber<T = WebSocketEventMap["message"]> = {

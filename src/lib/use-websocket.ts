@@ -40,7 +40,7 @@ export const useWebSocket = (
   const startRef = useRef<() => void>(() => void 0);
   const reconnectCount = useRef<number>(0);
   const messageQueue = useRef<WebSocketMessage[]>([]);
-  const requestQueue = useRef<WebSocketMessage[]>([]);
+
   const webSocketProxy = useRef<WebSocket | null>(null);
   const optionsCache = useRef<Options>(options);
 
@@ -68,7 +68,8 @@ export const useWebSocket = (
     }
   }, []);
 
-  const sendRequest = useCallback((message) => {
+  const sendRequest = useCallback((action: string, data: any) => {
+    const message = { action, ...data };
     const ackPromise: any = new Promise((resolve, reject) => {
       const handleAckMessageEvent = (message: any) => {
         if (
@@ -195,9 +196,6 @@ export const useWebSocket = (
     if (readyStateFromUrl === ReadyState.OPEN) {
       messageQueue.current.splice(0).forEach((message) => {
         sendMessage(message);
-      });
-      requestQueue.current.splice(0).forEach((message) => {
-        sendRequest(message);
       });
     }
   }, [readyStateFromUrl]);

@@ -62,7 +62,7 @@ export const useSocketIO = (
   const socketIOLastMessage = useMemo(() => getSocketData(lastMessage), [
     lastMessage,
   ]);
-  const sendRequest = useCallback((message) => {
+  const sendRequest = useCallback((action: string, data: any) => {
     return new Promise((resolve, reject) => {
       const handleAckMessageEvent = (message: any) => {
         resolve("test");
