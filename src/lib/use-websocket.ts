@@ -176,6 +176,8 @@ export const useWebSocket = (
   return {
     sendMessage,
     sendJsonMessage,
+    addEventListener,
+    removeEventListener,
     lastMessage,
     lastJsonMessage,
     readyState: readyStateFromUrl,
