@@ -40,6 +40,7 @@ export const useWebSocket = (
   const startRef = useRef<() => void>(() => void 0);
   const reconnectCount = useRef<number>(0);
   const messageQueue = useRef<WebSocketMessage[]>([]);
+  const requestQueue = useRef<WebSocketMessage[]>([]);
   const webSocketProxy = useRef<WebSocket | null>(null);
   const optionsCache = useRef<Options>(options);
 
@@ -67,23 +68,48 @@ export const useWebSocket = (
     }
   }, []);
 
-  const addEventListener: any = useCallback((f: () => void) => {
-    if (
-      webSocketRef.current &&
-      webSocketRef.current.readyState === ReadyState.OPEN
-    ) {
-      webSocketRef.current.addEventListener("message", f);
-    }
+  const sendRequest = useCallback((message) => {
+    const ackPromise: any = new Promise((resolve, reject) => {
+      const handleAckMessageEvent = (message: any) => {
+        if (
+          !webSocketRef.current ||
+          webSocketRef.current?.readyState !== ReadyState.OPEN
+        ) {
+          reject("no socket yet!");
+        }
+        try {
+          const jsonMessage = JSON.parse(message.data);
+          if (webSocketRef.current && jsonMessage.action === message.action) {
+            console.log("socket::got-response", jsonMessage);
+            webSocketRef.current.removeEventListener(
+              "message",
+              handleAckMessageEvent
+            );
+            return resolve(jsonMessage);
+          }
+        } catch (err) {
+          reject(err);
+        }
+      };
+      if (webSocketRef.current) {
+        //   handleAckMessageEvent = handleAckMessageEvent.bind(this);
+        webSocketRef.current.addEventListener("message", handleAckMessageEvent);
+        sendJsonMessage(message);
+      }
+    });
+    return timeoutPromise(ackPromise, 3000);
   }, []);
 
-  const removeEventListener: any = useCallback((f: () => void) => {
-    if (
-      webSocketRef.current &&
-      webSocketRef.current.readyState === ReadyState.OPEN
-    ) {
-      webSocketRef.current.removeEventListener("message", f);
-    }
-  }, []);
+  const timeoutPromise = (promise: Promise<any>, timeoutMs: number) => {
+    const timeoutPromise = new Promise((reject) => {
+      const timeout = setTimeout(() => {
+        clearTimeout(timeout);
+        return reject(new Error("Promise Timeout"));
+      }, timeoutMs);
+    });
+
+    return Promise.race([timeoutPromise, promise]);
+  };
 
   const sendJsonMessage: SendJsonMessage = useCallback(
     (message) => {
@@ -170,14 +196,16 @@ export const useWebSocket = (
       messageQueue.current.splice(0).forEach((message) => {
         sendMessage(message);
       });
+      requestQueue.current.splice(0).forEach((message) => {
+        sendRequest(message);
+      });
     }
   }, [readyStateFromUrl]);
 
   return {
     sendMessage,
     sendJsonMessage,
-    addEventListener,
-    removeEventListener,
+    sendRequest,
     lastMessage,
     lastJsonMessage,
     readyState: readyStateFromUrl,
