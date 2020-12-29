@@ -80,7 +80,7 @@ export const useWebSocket = (
         }
         try {
           const jsonMessage = JSON.parse(message.data);
-          if (webSocketRef.current && jsonMessage.action === message.action) {
+          if (webSocketRef.current && jsonMessage.action === action) {
             console.log("socket::got-response", jsonMessage);
             webSocketRef.current.removeEventListener(
               "message",
