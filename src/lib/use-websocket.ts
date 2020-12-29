@@ -67,7 +67,7 @@ export const useWebSocket = (
     }
   }, []);
 
-  const addEventListener: any = useCallback((f: any) => {
+  const addEventListener: any = useCallback((f: () => void) => {
     if (
       webSocketRef.current &&
       webSocketRef.current.readyState === ReadyState.OPEN
@@ -76,7 +76,7 @@ export const useWebSocket = (
     }
   }, []);
 
-  const removeEventListener: any = useCallback((f: any) => {
+  const removeEventListener: any = useCallback((f: () => void) => {
     if (
       webSocketRef.current &&
       webSocketRef.current.readyState === ReadyState.OPEN
