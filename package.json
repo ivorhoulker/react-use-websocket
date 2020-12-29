@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/robtaussig/react-use-websocket.git"
+    "url": "git+https://github.com/ivorhoulker/react-use-websocket.git"
   },
   "dependencies": {},
   "devDependencies": {
@@ -33,7 +33,7 @@
     "babel-eslint": "^10.0.1",
     "babel-jest": "^24.8.0",
     "babel-loader": "^8.0.5",
-    "cross-env": "^7.0.2",
+    "cross-env": "^7.0.3",
     "jest": "^24.8.0",
     "source-map-loader": "^0.2.4",
     "typescript": "^3.7.2"
